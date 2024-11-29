@@ -62,12 +62,16 @@ class Brick(pygame.sprite.Sprite):
 
         self.surf.fill(pygame.Color("green"))
 
-        if ball.rect.y <= self.rect.y+self.rect.height:
+        if ball.rect.y <= self.rect.y:
             self.surf.fill(pygame.Color("aqua"))
-            if ball.rect.x <= self.rect.x:
-                self.surf.fill(pygame.Color("orange"))
-            if ball.rect.x+ball.rect.width >= self.rect.x+self.rect.width:
-                self.surf.fill(pygame.Color("red"))
+        if ball.rect.y+ball.rect.height >= self.rect.y+self.rect.height:
+            self.surf.fill(pygame.Color("purple"))
+
+        if ball.rect.x <= self.rect.x:
+            self.surf.fill(pygame.Color("orange"))
+        if ball.rect.x+ball.rect.width >= self.rect.x+self.rect.width:
+            self.surf.fill(pygame.Color("red"))
+        
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self):
@@ -140,12 +144,12 @@ player = Player()
 ball = None
 
 bricks_i = 10
-bricks_j = 3
+bricks_j = 10
 bricks = []
 
 # bricks
-for i in range(10):
-    for j in range(3):
+for i in range(bricks_i):
+    for j in range(bricks_j):
         bricks.append(Brick(i, j))
 
 clock = pygame.time.Clock()
@@ -185,7 +189,7 @@ while running:
         screen.blit(ball.surf, ball.rect)
 
     fps = clock.get_fps()
-    text_surface = font.render(f"fps: {int(fps)}, {round(get_deltaTime(), 6)} ms", True, (255, 0, 0))
+    text_surface = font.render(f"fps: {int(fps)}, {round(get_deltaTime(), 6)} ms, you are {'dead' if ball and ball.dead else 'alive'}", True, pygame.Color("grey"))
     screen.blit(text_surface, (0, 0))
 
     #clock.tick(100)
