@@ -4,7 +4,7 @@ from pygame.locals import *
 from Game import Game
 
 def main():
-    game = Game(1280, 720)
+    game = Game(600, 600)
 
     running = True
     while running:
@@ -37,7 +37,7 @@ def main():
 
         game.show_debug_info()
 
-        #clock.tick(100)
+        game.clock.tick(60)
         pygame.display.flip()
 
 

@@ -2,9 +2,9 @@ import pygame
 from pygame.locals import K_LEFT, K_RIGHT
 
 
-class Player(pygame.sprite.Sprite):
+class Paddle(pygame.sprite.Sprite):
     def __init__(self, game):
-        super(Player, self).__init__()
+        super(Paddle, self).__init__()
         self.game = game
         self.surf = pygame.Surface((150, 25))
         self.surf.fill((0, 0, 0))

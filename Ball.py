@@ -1,64 +1,51 @@
 import pygame
+from pygame import Vector2
+
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, game):
         super(Ball, self).__init__()
         self.game = game
 
-
-        # self.surf = pygame.Surface((20, 20))
-        # self.surf.fill(pygame.Color("blue"))
-
         self.surf = pygame.image.load("assets/ball.png")
         self.surf.convert()
-        self.surf = pygame.transform.scale(self.surf, (20, 20))
-        self.rect = self.surf.get_rect()
+        size = 40
+        self.surf = pygame.transform.scale(self.surf, (size, size))
 
-        self.rect.x = (game.SCREEN_WIDTH  / 2) - self.surf.get_width()  / 2  # x
-        self.rect.y = (game.SCREEN_HEIGHT / 2) - self.surf.get_height() / 2  # y
+        self.position = Vector2(self.game.SCREEN_WIDTH / 2, self.game.SCREEN_HEIGHT / 2)
+        self.rect = self.surf.get_rect(center=self.position)
 
+        self.velocity = Vector2(1, 1)
 
-        self.speed = 0.25
-        self.speed = 0.4
-        self.directionX = 1
-        self.directionY = 1
+        self.speed = 10
 
         self.dead = False
 
-    def update(self, player):
+
+    def update(self, paddle):
         if self.dead:
             self.surf.fill(pygame.Color("red"))
             return
 
-        moveX = self.speed * self.game.get_delta_time() * 1000
-        moveY = self.speed * self.game.get_delta_time() * 1000
+        if self.rect.x > self.game.SCREEN_WIDTH - self.rect.width or self.rect.x <= 0:  # East/West
+            self.velocity = self.velocity.reflect(Vector2(-1, 0))
+        if self.rect.y <= 0:  # Top
+            self.velocity = self.velocity.reflect(Vector2(0, 1))
 
-        if self.rect.x > self.game.SCREEN_WIDTH-self.rect.width:
-            self.directionX = -abs(self.directionY)
 
-        if self.rect.y+self.rect.height > player.rect.y:
-            if self.rect.x > player.rect.x:
-                if self.rect.x+self.rect.width < player.rect.x+player.rect.width:
-                    self.directionY = -abs(self.directionY)
+        if self.rect.colliderect(paddle.rect):
+            self.velocity = self.velocity.reflect(Vector2(0, -1))
 
-        if self.rect.y > self.game.SCREEN_HEIGHT-self.rect.height:
+
+        if self.rect.y > self.game.SCREEN_HEIGHT:
             print("YOU DEAD")
-
-        if self.rect.y > self.game.SCREEN_HEIGHT-self.rect.height:
             self.dead = True
 
-        if self.rect.x <= 0:
-            self.directionX = abs(self.directionY)
-        if self.rect.y <= 0:
-            self.directionY = abs(self.directionY)
+        before_vel = self.velocity
 
+        delta_time = max(self.game.get_delta_time(), 0.001)
+        self.velocity = self.velocity.normalize() * delta_time * 1000 * self.speed
 
-        if self.directionX == 1:
-            self.rect.x += moveX
-        else:
-            self.rect.x -= moveX
+        #print(f"norm+speed: {before_vel} -> {self.velocity}")
 
-        if self.directionY == 1:
-            self.rect.y += moveY
-        else:
-            self.rect.y -= moveY
+        self.rect.move_ip(self.velocity)
